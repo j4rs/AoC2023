@@ -76,7 +76,7 @@ test = [
 puts day3_part_one(test)
 
 # Large puzzle input
-file = File.open("d4.txt")
+file = File.open("d3.txt")
 file_data = file.readlines.map(&:chomp)
 file.close
 
