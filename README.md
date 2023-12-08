@@ -7,3 +7,4 @@
 1. [Day 5](./src/d5)
 1. [Day 6](./src/d6)
 1. [Day 7](./src/d7)
+1. [Day 8](./src/d8)
