@@ -2,7 +2,7 @@
 
 def day5_part_two(input, label = "test")
   started_at = Time.now
-  # Parse input and
+  # Parse input
   seeds =
     input[0]
       .scan(/seeds: (.*)/)

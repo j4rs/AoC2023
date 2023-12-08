@@ -24,7 +24,7 @@ def day3_part_one(input)
 
           # Ignore and continue if next char is a number
           # otherwise it means we have completed the number
-          # and let check whether it is adjacent
+          # so let check whether it is adjacent
           next if next_char&.match?(/\d/)
 
           # column where the number starts
@@ -34,6 +34,7 @@ def day3_part_one(input)
           # left and right
           previous_char = start_col.positive? ? matrix[row_index][start_col - 1] : nil
 
+          # Get the surrounding chars
           surrounding_chars = [previous_char, next_char].compact
           (start_col - 1..end_col + 1).each do |col|
             next if col.negative? || col > cols - 1
@@ -45,6 +46,8 @@ def day3_part_one(input)
             surrounding_chars << matrix[row_index + 1][col] if row_index < rows - 1
           end
 
+          # It is adjacent if any of the surrounding chars is a
+          # symbol (not period, not a number)
           is_adjacent =
             surrounding_chars.any? do |char|
               char != period && !char.match?(/\d/)

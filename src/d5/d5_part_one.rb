@@ -2,6 +2,7 @@
 
 def day5_part_one(input)
   almanac = {}
+  # Parse the input
   seeds =
     input[0]
       .scan(/seeds: (.*)/)
@@ -10,8 +11,6 @@ def day5_part_one(input)
       .map(&:to_i)
 
   map_type = ""
-
-  # Parse the input
   input[1..]
     .each do |line|
       next if line.empty?
@@ -41,11 +40,9 @@ def day5_part_one(input)
             (m[:source]...(m[:source] + m[:range])).include?(source)
           end
 
-        if entry
-          entry[:dest] + (1..(source - entry[:source])).size
-        else
-          source # same destination as it is not mapped
-        end
+        next source unless entry # same destination as it is not mapped
+
+        entry[:dest] + (1..(source - entry[:source])).size
       end
 
     min_location.zero? ? location : [min_location, location].min

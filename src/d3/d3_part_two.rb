@@ -25,7 +25,7 @@ def day3_part_two(input)
 
           # Ignore and continue if next char is a number
           # otherwise it means we have completed the number
-          # and let check whether it is adjacent
+          # so let check whether it is adjacent
           next if next_char&.match?(/\d/)
 
           # column where the number starts
@@ -36,7 +36,6 @@ def day3_part_two(input)
           previous_char = start_col.positive? ? matrix[row_index][start_col - 1] : nil
 
           surrounding_chars = []
-
           surrounding_chars << [row_index, start_col - 1] if previous_char == gear_char
           surrounding_chars << [row_index, col_index + 1] if next_char == gear_char
 
@@ -57,8 +56,7 @@ def day3_part_two(input)
           end
 
           is_adjacent = surrounding_chars.any?
-
-          adjacents << [surrounding_chars.join(""), number] if is_adjacent
+          adjacents << [surrounding_chars.join, number] if is_adjacent
         else
           number = "" # and go to next char in the matrix
         end
@@ -67,13 +65,12 @@ def day3_part_two(input)
 
   gear_ratios =
     adjacents
-    .group_by(&:first) # Group by position of *
-    .select { |_key, group| group.size == 2 } # Reject groups of 1 or more than two
-    .values
-    .reduce([]) do |acc, group| # power the found gears
-      n1, n2 = group.map(&:last)
-      acc << n1.to_i * n2.to_i
-    end
+      .group_by(&:first) # Group by position of * (adjacents that share an * symbol)
+      .values
+      .reduce([]) do |acc, group| # power the found gears
+        n1, n2 = group.map(&:last)
+        acc << n1.to_i * n2.to_i
+      end
 
   gear_ratios.sum
 end

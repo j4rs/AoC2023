@@ -8,17 +8,14 @@ def day2_part_one(input)
     game_id = game.scan(/Game (\d+): /).flatten[0].to_i
 
     valid_game = true
-    game
-      .split(";")
-      .each do |iteration|
-      # puts iteration
-      # For each iteration
+    game.split(";").each do |iteration|
       cubes.each do |color, max_cubes|
-        break unless valid_game
-
         reveladed_cubes = iteration.scan(/(\d+) #{color}/).flatten[0].to_i
         # do not continue if reveladed cubes are bigger than top
-        valid_game = false if reveladed_cubes > max_cubes
+        if reveladed_cubes > max_cubes
+          valid_game = false
+          break
+        end
       end
     end
     # Valid game?

@@ -9,8 +9,6 @@ def day2_part_two(input)
     game
       .split(";")
       .each do |iteration|
-        # puts iteration
-        # For each iteration
         max_cubes.each do |color, max|
           reveladed_cubes = iteration.scan(/(\d+) #{color}/).flatten[0].to_i
           max_cubes[color] = reveladed_cubes if reveladed_cubes > max
