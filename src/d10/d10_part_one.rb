@@ -7,8 +7,6 @@ def day10_part_one(input)
   east  = :east
   west  = :west
 
-  matrix = [[]]
-
   pipes = {
     # north and south
     "|" => lambda { |from, row, col|
@@ -48,8 +46,8 @@ def day10_part_one(input)
   cols = matrix[0].length
 
   srow, scol = []
-  (0..rows - 1).each do |row|
-    (0..cols - 1).each do |col|
+  rows.times.each do |row|
+    cols.times.each do |col|
       next unless matrix[row][col] == start
 
       srow = row
@@ -58,19 +56,19 @@ def day10_part_one(input)
     end
   end
 
-  # Find the loop
+  # Find where to go next from the starting point
   direction, next_row, next_col =
     # north, south, east, west
     if srow.positive? && ["|", "F", "7"].include?(matrix[srow - 1][scol])
-      [:south, srow - 1, scol] # north
+      [:south, srow - 1, scol] # go south
     elsif srow < rows && ["|", "J", "L"].include?(matrix[srow + 1][scol])
-      [:north, srow + 1, scol] # south
+      [:north, srow + 1, scol] # go north
     elsif scol < cols && ["-", "J", "7"].include?(matrix[srow][scol + 1])
-      [:west, srow, scol + 1] # east (scol + 1)
+      [:west, srow, scol + 1] # go west
     elsif ["-", "F", "L"].include?(matrix[srow][scol - 1])
-      [:east, srow, scol - 1] # west (scol + 1)
+      [:east, srow, scol - 1] # go east
     else
-      raise "No starting destination found"
+      raise "No starting point found"
     end
 
   start_tile = matrix[next_row][next_col] # -, |, L, 7, ...
@@ -90,15 +88,14 @@ def day10_part_one(input)
   steps / 2
 end
 
-def go_to(fromx, fromy, direction, tile); end
-
-test = [
-  "7-F7-",
-  ".FJ|7",
-  "SJLL7",
-  "|F--J",
-  "LJ.LJ"
-].freeze
+test = <<~INPUT
+  7-F7-
+  .FJ|7
+  SJLL7
+  |F--J
+  LJ.LJ
+INPUT
+  .split(/\n/)
 
 pp day10_part_one(test)
 
