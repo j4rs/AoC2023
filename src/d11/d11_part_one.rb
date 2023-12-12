@@ -19,41 +19,15 @@ def day11_part_one(input)
 
   cols_without_galaxies =
     cols.times.reduce([]) do |acc, col|
-      has_galaxies = rows.times.any? do |row|
-        input[row][col].include?(gsymbol)
-      end
+      has_galaxies =
+        rows.times.any? { |row| input[row][col].include?(gsymbol) }
 
       next acc if has_galaxies
 
       acc << col
     end
 
-  rows_without_galaxies =
-    rows_without_galaxies
-      .each_with_index
-      .map do |row, index|
-        rows_without_galaxies[index] = row + index
-      end
-
-  cols_without_galaxies =
-    cols_without_galaxies
-      .each_with_index
-      .map do |col, index|
-        cols_without_galaxies[index] = col + index
-      end
-
-  expand = input.dup
-  rows_without_galaxies.each do |row|
-    expand = expand[0...row] + [void * expand[0].length] + expand[row...]
-  end
-
-  cols_without_galaxies.each do |col|
-    expand.length.times.each do |row|
-      expand[row] = expand[row][0...col] + "." + expand[row][col...]
-    end
-  end
-
-  expand.each_with_index do |drow, row|
+  input.each_with_index do |drow, row|
     drow
       .chars
       .each_with_index do |char, col|
@@ -74,9 +48,25 @@ def day11_part_one(input)
   pairs.map do |pair|
     g1 = pair.first
     g2 = pair.last
-    ["#{g1[0]}:#{g2[0]}", (g1[1] - g2[1]).abs + (g1[2] - g2[2]).abs]
+    # Calc how many empty rows there are between them
+    empty_rows_btw =
+      rows_without_galaxies.reduce(0) do |acc, row|
+        acc += 1 if row.between?([g1[1], g2[1]].min, [g1[1], g2[1]].max)
+        acc
+      end
+
+    empty_cols_btw =
+      cols_without_galaxies.reduce(0) do |acc, col|
+        acc += 1 if col.between?([g1[2], g2[2]].min, [g1[2], g2[2]].max)
+        acc
+      end
+
+    # calc cols
+    rows_dist = (g1[1] - g2[1]).abs + empty_rows_btw
+    cols_dist = (g1[2] - g2[2]).abs + empty_cols_btw
+
+    rows_dist + cols_dist
   end
-  .map(&:last)
   .sum
 end
 
@@ -100,4 +90,4 @@ file = File.open("d11.txt")
 file_data = file.readlines.map(&:chomp)
 file.close
 
-puts day11_part_one(file_data)
+pp day11_part_one(file_data)
