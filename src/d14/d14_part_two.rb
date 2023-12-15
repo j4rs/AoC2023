@@ -69,11 +69,7 @@ pp day14_part_two(test)
 
 # Large puzzle input
 file = File.open("d14.txt")
-file_data =
-  file
-    .read
-    .split(/\n/)
-
+file_data = file.readlines.map(&:chomp)
 file.close
 
 pp day14_part_two(file_data)
