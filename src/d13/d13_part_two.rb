@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 def find_mirror(grid)
+  # Got the solution from here https://www.youtube.com/watch?v=GYbjIvTQ_HA
   (1...grid.length).each do |i|
     above = grid[...i].reverse # above the line
     below = grid[i..] # below the line
