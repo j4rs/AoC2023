@@ -29,8 +29,8 @@ def move_beam(grid, tiles, point, direction)
 
   # Shared params
   params = [grid, tiles]
-  # What happens next
 
+  # What happens next
   tile_content = grid[point.first][point.last]
   case tile_content
   when "|"
@@ -68,19 +68,13 @@ def day16_part_two(input)
   grid = input
 
   # Brute force
-  columns = %i(down left up right).map do |direction|
-    coords =
-      case direction
-      when :down
-        (1...cols).map { |col| [0, col] } # top column
-      when :left
-        (1...rows).map { |row| [row, cols - 1] } # right column
-      when :up
-        (1...cols).map { |col| [rows - 1, col] } # lower column
-      when :right
-        (1...rows).map { |row| [row, 0] } # left column
-      end
-
+  borders = {
+    down: (1...cols).map { |col| [0, col] }, # top column
+    left: (1...rows).map { |row| [row, cols - 1] }, # right column
+    up: (1...cols).map { |col| [rows - 1, col] }, # lower column
+    right: (1...rows).map { |row| [row, 0] } # left column
+  }
+  .map do |direction, coords|
     coords.map do |point|
       tiles = {}
       move_beam(grid, tiles, point, direction)
@@ -90,35 +84,23 @@ def day16_part_two(input)
   .flatten
   .max
 
-  corners = [
-    [0, 0],
-    [0, cols - 1],
-    [rows - 1, 0],
-    [rows - 1, cols - 1]
-  ]
-  .each_with_index
-  .map do |(row, col), index|
-    directions =
-      case index
-      when 0
-        [:right, :down]
-      when 1
-        [:down, :left]
-      when 2
-        [:right, :up]
-      when 3
-        [:up, :left]
-      end
+  corners = {
+    [0, 0] => [:right, :down],
+    [0, cols - 1] => [:down, :left],
+    [rows - 1, 0] => [:right, :up],
+    [rows - 1, cols - 1] => [:up, :left]
+  }
+  .map do |coord, directions|
     directions.map do |direction|
       tiles = {}
-      move_beam(grid, tiles, [row, col], direction)
+      move_beam(grid, tiles, coord, direction)
       tiles.keys.count
     end
   end
   .flatten
   .max
 
-  [columns, corners].max
+  [borders, corners].max
 end
 
 test = <<~INPUT

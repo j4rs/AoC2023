@@ -29,8 +29,8 @@ def move_beam(grid, tiles, point, direction)
 
   # Shared params
   params = [grid, tiles]
-  # What happens next
 
+  # What happens next
   tile_content = grid[point.first][point.last]
   case tile_content
   when "|"
