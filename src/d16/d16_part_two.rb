@@ -7,18 +7,18 @@ POS = {
   down: [1, 0]
 }
 
-def move_beam(grid, tiles, point, direction)
-  unless (0...grid.length).include?(point[0]) &&
-         (0...grid[0].length).include?(point[1])
+def move_beam(point, direction)
+  unless (0...$grid.length).include?(point[0]) &&
+         (0...$grid[0].length).include?(point[1])
     return # dead end
   end
 
   tile_key = point.map(&:to_s).join(",")
-  return if tiles&.dig(tile_key, direction) # already energized
+  return if $tiles&.dig(tile_key, direction) # already energized
 
   # Energize the current tile
-  tiles[tile_key] ||= {} # initialize it first time
-  tiles[tile_key][direction] ||= 1
+  $tiles[tile_key] ||= {} # initialize it first time
+  $tiles[tile_key][direction] ||= 1
 
   # Calc next move
   next_right = point.zip(POS[:right]).map(&:sum)
@@ -27,45 +27,42 @@ def move_beam(grid, tiles, point, direction)
   next_down = point.zip(POS[:down]).map(&:sum)
   next_same_dir = eval("next_#{direction.to_s}")
 
-  # Shared params
-  params = [grid, tiles]
-
   # What happens next
-  tile_content = grid[point.first][point.last]
+  tile_content = $grid[point.first][point.last]
   case tile_content
   when "|"
     if [:right, :left].include?(direction)
-      move_beam(*params, next_up, :up)
-      move_beam(*params, next_down, :down)
+      move_beam(next_up, :up)
+      move_beam(next_down, :down)
     else
-      move_beam(*params, next_same_dir, direction)
+      move_beam(next_same_dir, direction)
     end
   when "-"
     if [:up, :down].include?(direction)
-      move_beam(*params, next_left, :left)
-      move_beam(*params, next_right, :right)
+      move_beam(next_left, :left)
+      move_beam(next_right, :right)
     else
-      move_beam(*params, next_same_dir, direction)
+      move_beam(next_same_dir, direction)
     end
   when "/"
-    move_beam(*params, next_up, :up) if direction == :right
-    move_beam(*params, next_down, :down) if direction == :left
-    move_beam(*params, next_right, :right) if direction == :up
-    move_beam(*params, next_left, :left) if direction == :down
+    move_beam(next_up, :up) if direction == :right
+    move_beam(next_down, :down) if direction == :left
+    move_beam(next_right, :right) if direction == :up
+    move_beam(next_left, :left) if direction == :down
   when "\\"
-    move_beam(*params, next_down, :down) if direction == :right
-    move_beam(*params, next_up, :up) if direction == :left
-    move_beam(*params, next_left, :left) if direction == :up
-    move_beam(*params, next_right, :right) if direction == :down
+    move_beam(next_down, :down) if direction == :right
+    move_beam(next_up, :up) if direction == :left
+    move_beam(next_left, :left) if direction == :up
+    move_beam(next_right, :right) if direction == :down
   else
-    move_beam(*params, next_same_dir, direction) # "."
+    move_beam(next_same_dir, direction) # "."
   end
 end
 
 def day16_part_two(input)
   rows = input.length
   cols = input[0].length
-  grid = input
+  $grid = input
 
   # Brute force
   borders = {
@@ -76,9 +73,9 @@ def day16_part_two(input)
   }
   .map do |direction, coords|
     coords.map do |point|
-      tiles = {}
-      move_beam(grid, tiles, point, direction)
-      tiles.keys.count
+      $tiles = {}
+      move_beam(point, direction)
+      $tiles.keys.count
     end
   end
   .flatten
@@ -92,9 +89,9 @@ def day16_part_two(input)
   }
   .map do |coord, directions|
     directions.map do |direction|
-      tiles = {}
-      move_beam(grid, tiles, coord, direction)
-      tiles.keys.count
+      $tiles = {}
+      move_beam(coord, direction)
+      $tiles.keys.count
     end
   end
   .flatten
