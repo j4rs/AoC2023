@@ -16,7 +16,7 @@ def day17_part_two(input)
     heat_loss, row, col, drow, dcol, moves = priority
 
     # Destination reached
-    if row == grid.length - 1 && col == grid[0].length - 1 && n >= 4
+    if row == grid.length - 1 && col == grid[0].length - 1 && moves >= 4
       min_heat_loss = heat_loss
       break
     end
