@@ -43,11 +43,12 @@ def day9_part_one(input)
   .sum
 end
 
-test = [
-  "0 3 6 9 12 15",
-  "1 3 6 10 15 21",
-  "10 13 16 21 30 45"
-].freeze
+test = <<~INPUT
+  0 3 6 9 12 15
+  1 3 6 10 15 21
+  10 13 16 21 30 45
+INPUT
+  .split(/\n/)
 
 pp day9_part_one(test)
 

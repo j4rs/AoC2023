@@ -16,10 +16,11 @@ def day6_part_one(input)
   .inject(&:*)
 end
 
-test = [
-  "Time:      7  15   30",
-  "Distance:  9  40  200"
-]
+test = <<~INPUT
+  Time:      7  15   30
+  Distance:  9  40  200
+INPUT
+  .split(/\n/)
 
 puts day6_part_one(test)
 

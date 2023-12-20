@@ -27,13 +27,14 @@ def day8_part_one(input)
   steps
 end
 
-test = [
-  "LLR",
-  "",
-  "AAA = (BBB, BBB)",
-  "BBB = (AAA, ZZZ)",
-  "ZZZ = (ZZZ, ZZZ)"
-].freeze
+test = <<~INPUT
+  LLR
+
+  AAA = (BBB, BBB)
+  BBB = (AAA, ZZZ)
+  ZZZ = (ZZZ, ZZZ)
+INPUT
+  .split(/\n/)
 
 puts day8_part_one(test)
 

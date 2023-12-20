@@ -110,13 +110,14 @@ def day7_part_one(input)
     .sum
 end
 
-test = [
-  "32T3K 765",
-  "T55J5 684",
-  "KK677 28",
-  "KTJJT 220",
-  "QQQJA 483"
-].freeze
+test = <<~INPUT
+  32T3K 765
+  T55J5 684
+  KK677 28
+  KTJJT 220
+  QQQJA 483
+INPUT
+  .split(/\n/)
 
 puts day7_part_one(test)
 
