@@ -1,18 +1,22 @@
 # frozen_string_literal: true
 
-def accept(workflow = $rules["in"], xmas)
+def accept?(workflow = $rules["in"], xmas)
   x, m, a, s = xmas
 
   # Find a rule that evaluates to true
-  rule = workflow[:rules].find { |r| eval(r[0]) }
-  resolution = rule ? rule[1] : workflow[:resol]
+  rule =
+    workflow[:rules].find do |r|
+      var, method, value = r[0].scan(/([x,m,a,s])([<,>])(.*)/).flatten
+      instance_eval(var).send(method, value.to_i)
+    end
 
+  resolution = rule ? rule[1] : workflow[:resol]
   # Recursion exit
-  return true if resolution == "A"
+  return true  if resolution == "A"
   return false if resolution == "R"
 
   # Otherwise let's continue with the next workflow
-  accept($rules[resolution], xmas)
+  accept?($rules[resolution], xmas)
 end
 
 def day19_part_one(input)
@@ -33,17 +37,14 @@ def day19_part_one(input)
   input
     .last
     .split(/\n/)
-    .map do |part|
-      xmas =
-        part
-          .scan(/{([x,m,a,s]+\S*)}/)
-          .flatten[0]
-          .split(/,/)
-          .map { |str| str.split("=").last.to_i }
+    .flat_map do |part|
+      xmas = part.scan(/{([x,m,a,s]+\S*)}/)
+                 .flatten[0]
+                 .split(/,/)
+                 .map { |str| str.split("=").last.to_i }
 
-      accept(xmas) ? xmas : 0
+      accept?(xmas) ? xmas : 0
     end
-    .flatten
     .sum
 end
 
