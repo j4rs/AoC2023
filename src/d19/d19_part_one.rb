@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
-def accept?(workflow = $rules["in"], xmas)
-  x, m, a, s = xmas
+def accept?(xmas, wfname = "in")
+  # Recursion exit
+  return true  if wfname == "A"
+  return false if wfname == "R"
 
+  x, m, a, s = xmas
   # Find a rule that evaluates to true
+  workflow = $rules[wfname]
   rule =
     workflow[:rules].find do |r|
       var, method, value = r[0].scan(/([x,m,a,s])([<,>])(.*)/).flatten
       instance_eval(var).send(method, value.to_i)
     end
 
-  resolution = rule ? rule[1] : workflow[:resol]
-  # Recursion exit
-  return true  if resolution == "A"
-  return false if resolution == "R"
-
-  # Otherwise let's continue with the next workflow
-  accept?($rules[resolution], xmas)
+  # Continue with the next workflow name
+  resol = rule ? rule[1] : workflow[:resol]
+  accept?(xmas, resol)
 end
 
 def day19_part_one(input)
