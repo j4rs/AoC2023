@@ -66,8 +66,6 @@ def day20_part_two(input)
         end
 
         if seen.values.all?(&:positive?)
-          puts seen.values
-
           presses = cycle_lengths.values.inject(:lcm)
           continue = false
         end
