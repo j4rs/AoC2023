@@ -1,96 +1,79 @@
 # frozen_string_literal: true
 
-def pulse(intensity, source = "button", mod_name = "broadcaster")
-  seen_key = [intensity, source, mod_name]
-  return if $seen.include?(seen_key)
-
-  $seen << seen_key
-
-  puts "#{source} -#{intensity == :lo ? "low" : "high" } -> #{mod_name} "
-
-  $pulses_count[intensity] += 1
-end
-
-def pulse(intensity, source = "button", mod_name = "broadcaster")
-  seen_key = [intensity, source, mod_name]
-  return if $seen.include?(seen_key)
-
-  $seen << seen_key
-
-  puts "#{source} -#{intensity == :lo ? "low" : "high" } -> #{mod_name} "
-
-  $pulses_count[intensity] += 1
-  mod = $panel[mod_name]
-
-  return if mod.nil? # output
-
-  case mod[:type]
-  when "broadcast"
-    mod[:modules].each { |name| pulse(intensity, mod_name, name) }
-  when "flip"
-    return if intensity == :hi
-    # Otherwise is lo, switch on/off
-    mod[:on] = !mod[:on]
-    mod[:modules].each do |name|
-      pulse(mod[:on] ? :hi : :lo, mod_name, name)
-    end
-  when "conj"
-    mod[:lpulse] ||= {}
-    mod[:lpulse][source] = intensity
-
-    inputs =
-      $panel
-        .select { |_, v| v[:modules].include?(mod_name) }
-        .keys
-        .each { |k| mod[:lpulse][k] ||= :lo }
-
-    all_hi = mod[:lpulse].values.all? { |v| v == :hi }
-
-    mod[:modules].each do |name|
-      pulse(all_hi ? :lo : :hi, mod_name, name)
-    end
-  end
-end
-
 def day20_part_one(input)
-  $panel =
+  # Parse input
+  panel =
     input
       .reduce({}) do |hash, line|
-        left, right = line.split("->").map(&:strip)
+        left, right = line.split(" -> ").map(&:strip)
         name, type =
           case left[0]
           when "%"
-            [left[1..], "flip"]
+            [left[1..], "%"]
           when "&"
-            [left[1..], "conj"]
+            [left[1..], "&"]
           else
             [left, "broadcast"]
           end
 
-        modules = right.split(", ").map(&:strip)
-        hash.merge(name => { type:, on: false, modules: })
+        outputs = right.split(", ").map(&:strip)
+        hash.merge(name => { type:, on: false, outputs:, lpulse: {} })
       end
 
-  $panel
+  # Fill conjuntion modules memory
+  panel
+    .select { |_, v| v[:type] == "&" }
     .each do |mod_name, mod|
-
+      panel
+        .select { |_, v| v[:outputs].include?(mod_name) }
+        .each_key { |k| mod[:lpulse][k] ||= :lo }
     end
 
-  $pulses_count = { lo: 0, hi: 0 }
+  queue = Queue.new
+  lo = hi = 0
 
-  pp $panel
-  puts
+  1000.times do
+    lo += 1 # first signal to broadcaster
 
-  pushes = 3
-  pushes.times do
-    $seen = []
-    pulse(:lo)
-    puts
+    panel["broadcaster"][:outputs].each do |mod_name|
+      queue.push ["broadcast", mod_name, :lo]
+    end
+
+    until queue.empty?
+      origin, target, pulse = queue.pop
+
+      if pulse == :lo
+        lo += 1
+      else
+        hi += 1
+      end
+
+      next unless panel.key?(target)
+
+      mod = panel[target]
+
+      if mod[:type] == "%"
+        # Flip flop module
+        next if pulse == :hi
+
+        # Otherwise is lo, switch on/off
+        mod[:on] = !mod[:on]
+        mod[:outputs].each do |output|
+          queue.push [target, output, mod[:on] ? :hi : :lo]
+        end
+      else
+        # Conjuntion module
+        mod[:lpulse][origin] = pulse
+        all_hi = mod[:lpulse].values.all? { |v| v == :hi }
+
+        mod[:outputs].each do |output|
+          queue.push [target, output, all_hi ? :lo : :hi]
+        end
+      end
+    end
   end
 
-  # pp $seen
-  # pp $pulses_count
-  $pulses_count.values.inject(:*)
+  lo * hi
 end
 
 test = <<~INPUT
@@ -118,4 +101,4 @@ file = File.open("d20.txt")
 file_data = file.readlines(&:chomp)
 file.close
 
-# pp day20_part_one(file_data)
+pp day20_part_one(file_data)

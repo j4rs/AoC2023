@@ -1,3 +1,6 @@
+AllCops:
+  TargetRubyVersion: 3.3
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
@@ -17,4 +20,7 @@ Metrics/PerceivedComplexity:
   Enabled: false
 
 Metrics/BlockLength:
+  Enabled: false
+
+Metrics/BlockNesting:
   Enabled: false
